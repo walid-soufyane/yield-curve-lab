@@ -13,6 +13,7 @@ Fixed-income toolkit in Python: bond pricing, risk measures, and building a zero
 - Interpolation: linear zero rates, log-linear discount factors (piecewise-flat forwards), natural cubic spline (solved globally, since a spline is non-local)
 - Forward rates: term forwards F(t1, t2) and instantaneous forwards f(t)
 - Pricing off a zero curve and key-rate durations (tent shifts at 3M, 1Y, 2Y, 3Y, 5Y, 7Y, 10Y, 20Y, 30Y) that sum to effective duration
+- Scenario P&L for bond portfolios (parallel, steepener/flattener twist, butterfly): full revaluation vs key-rate-duration estimate
 - Nelson-Siegel and Svensson fitting: betas by OLS for fixed decay parameters, decay parameters by bounded 1-D search (NS) or grid + Nelder-Mead (Svensson)
 - Tests: par bonds at face, closed forms, YTM round trip, numerical derivatives, repricing of every input instrument, forward/discount consistency. Run on every push by GitHub Actions
 
@@ -76,6 +77,18 @@ Three factors already explain this curve to about 2 bp. The negative curvature t
 
 About 86% of the rate risk sits at the 10-year point (the principal). The coupons spread the rest along the curve, and the KRDs add up to the effective duration.
 
+## Scenario P&L: bullet vs barbell
+$1M 10Y bullet vs a 2Y + 30Y barbell with the **same value and the same duration** ($592k 2Y + $423k 30Y). Full revaluation P&L (KRD estimate in brackets):
+
+| Scenario | 10Y bullet | 2Y/30Y barbell |
+|---|---|---|
+| Parallel +100bp | −$80.3k (−84.1k) | −$76.0k (−84.1k) |
+| Steepener 50bp (pivot 5Y) | −$6.6k (−6.7k) | −$22.0k (−23.7k) |
+| Flattener 50bp | +$6.7k (+6.7k) | +$25.6k (+23.7k) |
+| Butterfly 25bp (wings up, belly down) | +$17.8k (+17.6k) | −$11.8k (−12.2k) |
+
+Same duration does not mean same risk. The two lose the same on a parallel move to first order, but the barbell loses less in reality because it has more convexity. The barbell is also a bet on the curve flattening, and it loses when the belly outperforms. Key-rate durations show this up front, and a single duration number hides it.
+
 ## Roadmap
 - [x] Bond cash flows, pricing and YTM
 - [x] Macaulay/modified duration, convexity, DV01
@@ -83,5 +96,5 @@ About 86% of the rate risk sits at the 10-year point (the principal). The coupon
 - [x] Interpolation: linear zero rates, log-linear discount factors, cubic spline
 - [x] Forward rates
 - [x] Nelson-Siegel / Svensson curve fitting
-- [ ] Key-rate durations and parallel / twist scenario P&L
+- [x] Key-rate durations and parallel / twist scenario P&L
 - [ ] Example notebook with real curve data
