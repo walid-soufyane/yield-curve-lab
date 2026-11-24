@@ -12,6 +12,7 @@ Fixed-income toolkit in Python: bond pricing, risk measures, and building a zero
 - Zero-curve bootstrapping from deposits and par swaps (each input reprices to par to 1e-12)
 - Interpolation: linear zero rates, log-linear discount factors (piecewise-flat forwards), natural cubic spline (solved globally, since a spline is non-local)
 - Forward rates: term forwards F(t1, t2) and instantaneous forwards f(t)
+- Pricing off a zero curve and key-rate durations (tent shifts at 3M, 1Y, 2Y, 3Y, 5Y, 7Y, 10Y, 20Y, 30Y) that sum to effective duration
 - Nelson-Siegel and Svensson fitting: betas by OLS for fixed decay parameters, decay parameters by bounded 1-D search (NS) or grid + Nelder-Mead (Svensson)
 - Tests: par bonds at face, closed forms, YTM round trip, numerical derivatives, repricing of every input instrument, forward/discount consistency. Run on every push by GitHub Actions
 
@@ -65,6 +66,15 @@ Fitted to the bootstrapped curve above (log-linear DF), zero rates in %:
 | Svensson | 4.271 | 0.025 | −0.136 | −1.732 | 0.35, 2.61 | 1.4 bp |
 
 Three factors already explain this curve to about 2 bp. The negative curvature term is what produces the dip in the 3–7 year area.
+
+## Key-rate durations example
+10-year 4% semi-annual bond on the bootstrapped curve:
+
+| Key tenor | 3M | 1Y | 2Y | 3Y | 5Y | 7Y | 10Y | 20Y | 30Y | **Sum** |
+|---|---|---|---|---|---|---|---|---|---|---|
+| KRD | 0.006 | 0.036 | 0.073 | 0.174 | 0.327 | 0.548 | 7.178 | 0 | 0 | **8.344** |
+
+About 86% of the rate risk sits at the 10-year point (the principal). The coupons spread the rest along the curve, and the KRDs add up to the effective duration.
 
 ## Roadmap
 - [x] Bond cash flows, pricing and YTM
