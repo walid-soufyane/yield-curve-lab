@@ -12,6 +12,7 @@ Fixed-income toolkit in Python: bond pricing, risk measures, and building a zero
 - Zero-curve bootstrapping from deposits and par swaps (each input reprices to par to 1e-12)
 - Interpolation: linear zero rates, log-linear discount factors (piecewise-flat forwards), natural cubic spline (solved globally, since a spline is non-local)
 - Forward rates: term forwards F(t1, t2) and instantaneous forwards f(t)
+- Nelson-Siegel and Svensson fitting: betas by OLS for fixed decay parameters, decay parameters by bounded 1-D search (NS) or grid + Nelder-Mead (Svensson)
 - Tests: par bonds at face, closed forms, YTM round trip, numerical derivatives, repricing of every input instrument, forward/discount consistency. Run on every push by GitHub Actions
 
 ## Quick start
@@ -55,12 +56,22 @@ Deposits (3M–1Y) and semi-annual par swaps (2Y–30Y), zero rates in % (contin
 
 All three reprice the inputs exactly. They differ between nodes, most at the long end where nodes are sparse, and in how smooth the forward curve is.
 
+## Nelson-Siegel example
+Fitted to the bootstrapped curve above (log-linear DF), zero rates in %:
+
+| Model | β₀ (level) | β₁ (slope) | β₂ (curvature) | β₃ | τ | Max error |
+|---|---|---|---|---|---|---|
+| Nelson-Siegel | 4.265 | −0.012 | −1.730 | – | 2.53 | 2.1 bp |
+| Svensson | 4.271 | 0.025 | −0.136 | −1.732 | 0.35, 2.61 | 1.4 bp |
+
+Three factors already explain this curve to about 2 bp. The negative curvature term is what produces the dip in the 3–7 year area.
+
 ## Roadmap
 - [x] Bond cash flows, pricing and YTM
 - [x] Macaulay/modified duration, convexity, DV01
 - [x] Bootstrapping a zero curve from deposits, swaps and par bonds
 - [x] Interpolation: linear zero rates, log-linear discount factors, cubic spline
 - [x] Forward rates
-- [ ] Nelson-Siegel / Svensson curve fitting
+- [x] Nelson-Siegel / Svensson curve fitting
 - [ ] Key-rate durations and parallel / twist scenario P&L
 - [ ] Example notebook with real curve data
